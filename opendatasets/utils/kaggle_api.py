@@ -29,7 +29,6 @@ def read_kaggle_creds():
 
 def authenticate(username = "", kaggle_key = ""):
     if not read_kaggle_creds():
-        print('here')
         os.environ['KAGGLE_USERNAME'] = username
         os.environ['KAGGLE_KEY'] = _get_kaggle_key(kaggle_key)
     
@@ -37,8 +36,10 @@ def authenticate(username = "", kaggle_key = ""):
     api.authenticate()
     try:
         datasets = api.dataset_list()
+        print('Logged in as ', username)
         return True
     except Exception as e:
+        print('not logged in')
         return False
 
 def download_kaggle_dataset(dataset_url, data_dir, force=False, dry_run=False):

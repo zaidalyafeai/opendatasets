@@ -8,7 +8,7 @@ from opendatasets.utils.archive import extract_archive
 
 
 def authenticate_kaggle(username = "", kaggle_key = ""):
-    authenticate(username = username, kaggle_key = kaggle_key)
+    return authenticate(username = username, kaggle_key = kaggle_key)
 
 def download(dataset_id_or_url, data_dir='.', force=False, dry_run=False, **kwargs):
     # Check for a Kaggle dataset URL
