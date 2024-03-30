@@ -1,9 +1,7 @@
 import os
 from opendatasets.utils.kaggle_direct import get_kaggle_dataset_id, is_kaggle_url
 from opendatasets.utils.archive import extract_archive
-import click
 import json
-
 
 def _get_kaggle_key(kaggle_key):
     if kaggle_key.startswith('{'):
@@ -29,8 +27,21 @@ def read_kaggle_creds():
     except Exception:
         return False
 
+def authenticate(username = "", kaggle_key = ""):
+    if not read_kaggle_creds():
+        print('here')
+        os.environ['KAGGLE_USERNAME'] = username
+        os.environ['KAGGLE_KEY'] = _get_kaggle_key(kaggle_key)
+    
+    from kaggle import api
+    api.authenticate()
+    try:
+        datasets = api.dataset_list()
+        return True
+    except Exception as e:
+        return False
 
-def download_kaggle_dataset(dataset_url, data_dir, force=False, dry_run=False, username = "", kaggle_key = ""):
+def download_kaggle_dataset(dataset_url, data_dir, force=False, dry_run=False):
     dataset_id = get_kaggle_dataset_id(dataset_url)
     id = dataset_id.split('/')[1]
     target_dir = os.path.join(data_dir, id)
@@ -38,16 +49,10 @@ def download_kaggle_dataset(dataset_url, data_dir, force=False, dry_run=False, u
     if not force and os.path.exists(target_dir) and len(os.listdir(target_dir)) > 0:
         print('Skipping, found downloaded files in "{}" (use force=True to force download)'.format(
             target_dir))
-        return target_dir
-
-    if not read_kaggle_creds():
-        print("Please provide your Kaggle credentials to download this dataset. Learn more: http://bit.ly/kaggle-creds")
-        os.environ['KAGGLE_USERNAME'] = username
-        os.environ['KAGGLE_KEY'] = _get_kaggle_key(kaggle_key)
+        return target_dir        
 
     if not dry_run:
         from kaggle import api
-        api.authenticate()
         if dataset_id.split('/')[0] == 'competitions' or dataset_id.split('/')[0] == 'c':
             api.competition_download_files(
                 id,

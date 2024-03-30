@@ -3,9 +3,12 @@ from opendatasets.utils.network import download_url, is_url
 from opendatasets.utils.googledrive import is_google_drive_url, download_google_drive
 import os
 from opendatasets._version import __version__
-from opendatasets.utils.kaggle_api import download_kaggle_dataset, is_kaggle_url
+from opendatasets.utils.kaggle_api import download_kaggle_dataset, is_kaggle_url, authenticate
 from opendatasets.utils.archive import extract_archive
 
+
+def authenticate_kaggle(username = "", kaggle_key = ""):
+    authenticate(username = username, kaggle_key = kaggle_key)
 
 def download(dataset_id_or_url, data_dir='.', force=False, dry_run=False, **kwargs):
     # Check for a Kaggle dataset URL
