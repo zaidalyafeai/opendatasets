@@ -5,16 +5,15 @@ import click
 import json
 
 
-def _get_kaggle_key():
-    user_input = click.prompt("Your Kaggle Key", hide_input=True)
-    if user_input.startswith('{'):
+def _get_kaggle_key(kaggle_key):
+    if kaggle_key.startswith('{'):
         try:
             import json
-            api_details = json.loads(user_input)
+            api_details = json.loads(kaggle_key)
             return api_details['key']
         except Exception:
-            return user_input
-    return user_input
+            return kaggle_key
+    return kaggle_key
 
 
 def read_kaggle_creds():
@@ -31,7 +30,7 @@ def read_kaggle_creds():
         return False
 
 
-def download_kaggle_dataset(dataset_url, data_dir, force=False, dry_run=False):
+def download_kaggle_dataset(dataset_url, data_dir, force=False, dry_run=False, username = "", kaggle_key = ""):
     dataset_id = get_kaggle_dataset_id(dataset_url)
     id = dataset_id.split('/')[1]
     target_dir = os.path.join(data_dir, id)
@@ -39,12 +38,12 @@ def download_kaggle_dataset(dataset_url, data_dir, force=False, dry_run=False):
     if not force and os.path.exists(target_dir) and len(os.listdir(target_dir)) > 0:
         print('Skipping, found downloaded files in "{}" (use force=True to force download)'.format(
             target_dir))
-        return
+        return target_dir
 
     if not read_kaggle_creds():
         print("Please provide your Kaggle credentials to download this dataset. Learn more: http://bit.ly/kaggle-creds")
-        os.environ['KAGGLE_USERNAME'] = click.prompt("Your Kaggle username")
-        os.environ['KAGGLE_KEY'] = _get_kaggle_key()
+        os.environ['KAGGLE_USERNAME'] = username
+        os.environ['KAGGLE_KEY'] = _get_kaggle_key(kaggle_key)
 
     if not dry_run:
         from kaggle import api
@@ -71,3 +70,4 @@ def download_kaggle_dataset(dataset_url, data_dir, force=False, dry_run=False):
 
     else:
         print("This is a dry run, skipping..")
+    return data_dir
