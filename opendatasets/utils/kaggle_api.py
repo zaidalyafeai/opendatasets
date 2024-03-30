@@ -50,7 +50,6 @@ def download_kaggle_dataset(dataset_url, data_dir, force=False, dry_run=False):
     if not force and os.path.exists(target_dir) and len(os.listdir(target_dir)) > 0:
         print('Skipping, found downloaded files in "{}" (use force=True to force download)'.format(
             target_dir))
-        return target_dir        
 
     if not dry_run:
         from kaggle import api
@@ -76,4 +75,4 @@ def download_kaggle_dataset(dataset_url, data_dir, force=False, dry_run=False):
 
     else:
         print("This is a dry run, skipping..")
-    return data_dir
+    return target_dir
